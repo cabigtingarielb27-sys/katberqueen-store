@@ -1,0 +1,17 @@
+{
+  "appId": "com.katberqueen.queenystorepos",
+  "appName": "Queeny Store POS",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "backgroundColor": "#ec4899"
+    }
+  }
+}
