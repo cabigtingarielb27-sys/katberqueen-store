@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Queeny Store POS</title>
+<meta name="theme-color" content="#ec4899">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#fff8fc;--card:#ffffff;--ink:#3b1228;--ink2:#7a4a63;--muted:#ab7d97;
+  --pink:#ec4899;--pink2:#db2777;--fuchsia:#d946ef;--line:#f8dbea;
+  --green:#059669;--red:#e11d48;--amber:#d97706;
+  --shadow:0 14px 30px -22px rgba(219,39,119,.65);
+}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink);background:var(--bg);min-height:100vh;padding-bottom:48px;font-size:15px;
+  -webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(900px 420px at 50% -8%, rgba(236,72,153,.13), transparent 62%)}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+.hdr{position:sticky;top:0;z-index:30;background:rgba(255,248,252,.93);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hdr-in{max-width:1080px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.logo{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;
+  background:linear-gradient(140deg,#f472b6,#db2777);box-shadow:0 10px 20px -12px rgba(219,39,119,.95);overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
+.brand{font-weight:800;font-size:15px;line-height:1.15}
+.brand small{display:block;font-weight:700;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.hdr-tag{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pink2);
+  background:#fff;border:1px solid var(--line);padding:6px 10px;border-radius:999px}
+.nav{max-width:1080px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:4px 14px 10px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:0 0 auto;text-decoration:none;padding:8px 13px;border-radius:999px;font-size:13px;font-weight:700;color:var(--ink2);border:1px solid var(--line);background:#fff}
+.nav a.active{background:linear-gradient(135deg,var(--pink),var(--fuchsia));color:#fff;border-color:transparent;box-shadow:0 12px 22px -14px rgba(219,39,119,.95)}
+main{max-width:1080px;margin:0 auto;padding:16px 14px 40px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-top:3px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow)}
+.card+.card{margin-top:12px}
+.h2{font-size:14px;font-weight:800}
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:20px;color:#fff;
+  background:linear-gradient(135deg,#ec4899,#d946ef 55%,#db2777);box-shadow:0 22px 44px -26px rgba(219,39,119,.95)}
+.hero::after{content:"";position:absolute;right:-40px;top:-50px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.22);filter:blur(28px)}
+.hero-label{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.85);position:relative}
+.hero-big{font-size:clamp(30px,8vw,44px);font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:8px;position:relative;font-variant-numeric:tabular-nums}
+.hero-row{display:flex;gap:18px;margin-top:14px;position:relative;flex-wrap:wrap}
+.mini{display:flex;align-items:center;gap:8px}
+.mini-ic{width:26px;height:26px;border-radius:9px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:12px;font-weight:800}
+.mini-label{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.78)}
+.mini-val{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:1px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:var(--shadow)}
+.kpi-label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kpi-val{font-size:20px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums}
+.row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #fdeef6;text-decoration:none}
+.row:last-child{border-bottom:0}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.row-val{font-weight:800;font-variant-numeric:tabular-nums;font-size:13.5px;text-align:right}
+.badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+.b-cash{background:#d1fae5;color:#065f46}
+.b-utang{background:#fff0f7;color:#be185d;border:1px solid #fbcfdf}
+.b-void{background:#fee2e2;color:#991b1b}
+.b-in{background:#dbeafe;color:#1e40af}
+.b-out{background:#fef3c7;color:#92400e}
+.b-fund{background:#ede9fe;color:#5b21b6}
+.btn{appearance:none;border:0;cursor:pointer;font-family:inherit;font-size:13px;font-weight:800;padding:11px 16px;border-radius:14px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:transform .06s ease,opacity .15s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,var(--pink),var(--fuchsia));color:#fff;box-shadow:0 14px 26px -16px rgba(219,39,119,.95)}
+.btn-ghost{background:#fff;color:var(--pink2);border:1px solid var(--line)}
+.btn-danger{background:#fee2e2;color:#b91c1c}
+.btn-sm{padding:7px 11px;font-size:11.5px;border-radius:11px}
+.btn-block{width:100%}
+.input{width:100%;font-family:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;outline:none}
+.input:focus{border-color:#f9a8d4;box-shadow:0 0 0 4px rgba(236,72,153,.12)}
+option{font-size:15px}
+.lbl{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.empty{text-align:center;color:var(--muted);font-size:13px;font-weight:600;padding:22px 8px}
+.err{color:var(--red);font-size:12px;font-weight:700;margin-top:8px;min-height:14px}
+.tot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px dashed #f5cfe2;font-weight:800}
+.tot strong{font-size:20px;font-variant-numeric:tabular-nums}
+.cashier{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:860px){.cashier{grid-template-columns:1fr 340px;align-items:start}}
+.prod-grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));margin-top:12px}
+.prod{appearance:none;cursor:pointer;text-align:left;font-family:inherit;background:#fff;border:1px solid var(--line);border-radius:16px;padding:11px;
+  display:flex;flex-direction:column;gap:4px;min-height:82px;color:var(--ink)}
+.prod:hover{border-color:#f9a8d4}
+.prod.out{opacity:.45}
+.prod-name{font-size:12.5px;font-weight:700;line-height:1.25}
+.prod-price{font-size:14px;font-weight:800;color:var(--pink2);margin-top:auto}
+.prod-stock{font-size:10px;font-weight:700;color:var(--muted)}
+.cart-card{position:sticky;top:104px}
+.cart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.pill{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;background:#fff0f7;color:var(--pink2);padding:4px 9px;border-radius:999px;border:1px solid #fbcfdf}
+.cart-line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #fdeef6}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:28px;height:28px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:800;font-size:14px;cursor:pointer;color:var(--pink2);line-height:1}
+.qty span{min-width:18px;text-align:center;font-weight:800;font-size:13px}
+.chip{background:#fff0f7;border:1px solid #fbcfdf;color:var(--pink2);font-weight:800;font-size:11.5px;padding:8px 11px;border-radius:11px;cursor:pointer;font-family:inherit}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tabs{display:flex;gap:6px;margin:14px 0 4px}
+.tab{flex:1;padding:10px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:800;font-size:12.5px;color:var(--ink2);cursor:pointer;font-family:inherit}
+.tab.active{background:linear-gradient(135deg,var(--pink),var(--fuchsia));color:#fff;border-color:transparent}
+.overlay{position:fixed;inset:0;z-index:60;background:rgba(59,18,40,.45);display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:680px){.overlay{align-items:center;padding:24px}}
+.sheet{background:#fff;width:100%;max-width:460px;border-radius:26px 26px 0 0;padding:18px 18px 24px;max-height:92vh;overflow:auto;box-shadow:0 -14px 40px rgba(59,18,40,.22)}
+@media(min-width:680px){.sheet{border-radius:26px;max-height:86vh}}
+.m-title{font-size:17px;font-weight:800}
+.m-text{font-size:13px;color:var(--ink2);font-weight:600;margin-top:6px;line-height:1.5}
+.m-actions{display:flex;gap:8px;margin-top:18px}
+.m-actions .btn{flex:1}
+.receipt{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:#1f2937}
+.r-head{text-align:center;margin-bottom:8px}
+.r-head strong{font-size:15px;letter-spacing:.04em}
+.r-small{font-size:10.5px;color:#6b7280;text-align:center;margin-top:2px}
+.r-center{text-align:center;margin-top:8px}
+.r-line{border-top:1px dashed #d1d5db;margin:10px 0}
+.r-item{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.r-total{font-weight:800;font-size:14px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;
+  background:#3b1228;color:#fff;font-size:12.5px;font-weight:700;padding:11px 16px;border-radius:14px;z-index:80;box-shadow:0 16px 30px -18px rgba(0,0,0,.7)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.auth{max-width:460px;margin:0 auto}
+.hdr-user{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.foot{text-align:center;font-size:11px;color:var(--muted);font-weight:700;margin-top:22px}
+.hr{height:1px;background:#fdeef6;margin:12px 0}
+@media print{
+  body{background:#fff}
+  .hdr,.nav,#view,.toast,.no-print{display:none !important}
+  .overlay{position:static;display:block;background:#fff;padding:0}
+  .sheet{box-shadow:none;border-radius:0;max-width:none;max-height:none;padding:0;overflow:visible}
+}
+</style>
+<script>if (window.self !== window.top) window.parent.postMessage({ type: 'SANDBOX_DOCUMENT_START' }, '*');</script><script>
+    (function() {
+        var buffer = window.__base44_preview_native_failures;
+        if (!buffer || buffer.version !== 1 || !Array.isArray(buffer.entries)) {
+            buffer = { version: 1, entries: [], listenersInstalled: false };
+            window.__base44_preview_native_failures = buffer;
+        }
+        if (buffer.listenersInstalled) return;
+        function value(object, key) {
+            return object && typeof object[key] === 'string' ? object[key] : '';
+        }
+        function append(message) {
+            if (!message) return;
+            var normalizedMessage = String(message).slice(0, 5000);
+            for (var index = buffer.entries.length - 1; index >= 0; index--) {
+                var existing = buffer.entries[index];
+                if (existing && existing.level === 'error' && existing.message === normalizedMessage) {
+                    buffer.entries.splice(index, 1);
+                }
+            }
+            buffer.entries.push({
+                level: 'error',
+                message: normalizedMessage,
+                timestamp: Date.now()
+            });
+            if (buffer.entries.length > 100) {
+                buffer.entries.splice(0, buffer.entries.length - 100);
+            }
+        }
+        buffer.append = append;
+        function handleError(event) {
+            var target = event && event.target;
+            var tagName = value(target, 'tagName').toLowerCase() || 'window';
+            var isModule = tagName === 'script' && value(target, 'type').toLowerCase() === 'module';
+            var resourceType = isModule ? 'module' : tagName;
+            var url = value(target, 'src') || value(target, 'href') || value(event, 'filename');
+            var detail = value(event, 'message') || value(event && event.error, 'message');
+            var prefix = tagName === 'window' ? 'Native browser error' : 'Failed to load ' + resourceType;
+            append(prefix + (url ? ' ' + url : '') + (detail ? ': ' + detail : ''));
+        }
+        function rejectionReason(reason) {
+            if (typeof reason === 'string') return reason;
+            var message = value(reason, 'message');
+            if (message) return message;
+            try { return JSON.stringify(reason) || String(reason); }
+            catch (e) { return String(reason); }
+        }
+        function handleRejection(event) {
+            append('Unhandled promise rejection: ' + rejectionReason(event && event.reason));
+        }
+        function handleCspViolation(event) {
+            var blockedUri = value(event, 'blockedURI') || 'resource';
+            var directive = value(event, 'violatedDirective');
+            append('Content Security Policy blocked ' + blockedUri + (directive ? ' (' + directive + ')' : ''));
+        }
+        function overlayText(root, selector) {
+            var element = root && root.querySelector(selector);
+            return value(element, 'textContent').trim();
+        }
+        function captureViteOverlay(overlay) {
+            var root = overlay && overlay.shadowRoot;
+            var message = overlayText(root, '.message-body');
+            if (!message) return;
+            var plugin = overlayText(root, '.plugin');
+            var details = ['Vite build error: ' + (plugin ? plugin + ' ' : '') + message];
+            var file = overlayText(root, '.file');
+            var frame = overlayText(root, '.frame');
+            var stack = overlayText(root, '.stack');
+            if (file) details.push('File: ' + file);
+            if (frame) details.push(frame);
+            if (stack) details.push(stack);
+            append(details.join(String.fromCharCode(10)));
+        }
+        function captureViteOverlays(node) {
+            if (!node || node.nodeType !== 1) return;
+            if (node.matches && node.matches('vite-error-overlay')) captureViteOverlay(node);
+            if (!node.querySelectorAll) return;
+            var overlays = node.querySelectorAll('vite-error-overlay');
+            for (var index = 0; index < overlays.length; index++) captureViteOverlay(overlays[index]);
+        }
+        window.addEventListener('error', handleError, true);
+        window.addEventListener('unhandledrejection', handleRejection);
+        window.addEventListener('securitypolicyviolation', handleCspViolation);
+        if (typeof MutationObserver !== 'undefined' && document.documentElement) {
+            captureViteOverlays(document.documentElement);
+            new MutationObserver(function(records) {
+                for (var recordIndex = 0; recordIndex < records.length; recordIndex++) {
+                    var nodes = records[recordIndex].addedNodes;
+                    for (var nodeIndex = 0; nodeIndex < nodes.length; nodeIndex++) {
+                        captureViteOverlays(nodes[nodeIndex]);
+                    }
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+        buffer.listenersInstalled = true;
+    })();
+    </script><script data-preview-data-env-pin="true">
+    (function() {
+        var KEY = 'base44_data_env';
+        var APP_API_PATH = "/api/apps/6aae4ab0178e0c95482d0073/";
+        var STORAGE_KEY = KEY + ':' + APP_API_PATH;
+        var API_ORIGINS = ["https://app.base44.com", "https://base44.app"].map(function(u) { return new URL(u).origin; });
+        var REQUEST_INIT_KEYS = [
+            'method', 'headers', 'credentials', 'mode', 'cache', 'redirect',
+            'referrer', 'referrerPolicy', 'integrity', 'keepalive', 'signal', 'priority',
+        ];
+        var env = new URLSearchParams(window.location.search).get(KEY);
+        try {
+            if (env === 'dev' || env === 'prod') sessionStorage.setItem(STORAGE_KEY, env);
+            else env = sessionStorage.getItem(STORAGE_KEY);
+        } catch (e) {}
+        if (env !== 'dev' && env !== 'prod') return;
+        function pin(url) {
+            try {
+                var u = new URL(url, window.location.href);
+                var sameOrigin = u.origin === window.location.origin;
+                if (!sameOrigin && API_ORIGINS.indexOf(u.origin) === -1) return url;
+                // The app's own server routes and TanStack server functions build
+                // their SDK client from this request, so they need the selection too.
+                var appServerPath = sameOrigin && (
+                    u.pathname.startsWith('/api/') || u.pathname.startsWith('/_serverFn/')
+                );
+                if (!appServerPath && !u.pathname.startsWith(APP_API_PATH)) return url;
+                // Privileged function/agent routes trust this app's Preview host,
+                // not a dev parameter sent to the generic SDK API origin.
+                if (u.origin !== window.location.origin && (
+                    u.pathname.startsWith(APP_API_PATH + 'functions/') ||
+                    u.pathname.startsWith(APP_API_PATH + 'agents/')
+                )) {
+                    u = new URL(u.pathname + u.search + u.hash, window.location.origin);
+                }
+                u.searchParams.set(KEY, env);
+                return u.toString();
+            } catch (e) { return url; }
+        }
+        var origFetch = window.fetch;
+        window.fetch = function(input, init) {
+            if (typeof input === 'string' || input instanceof URL) {
+                return origFetch.call(this, pin(String(input)), init);
+            }
+            if (!input || !input.url) return origFetch.call(this, input, init);
+            var pinned = pin(input.url);
+            if (pinned === input.url) return origFetch.call(this, input, init);
+            try {
+                input = new Request(input, init);
+                if (!input.keepalive || !input.body) {
+                    return origFetch.call(this, new Request(pinned, input));
+                }
+                // RequestInit exposes an existing body as a stream, which Fetch
+                // forbids with keepalive. Buffer only that case, after init overrides.
+                var self = this;
+                return input.blob().then(function(body) {
+                    var rebuilt = { body: body };
+                    REQUEST_INIT_KEYS.forEach(function(key) {
+                        if (input[key] !== undefined) rebuilt[key] = input[key];
+                    });
+                    return origFetch.call(self, new Request(pinned, rebuilt));
+                });
+            } catch (error) { return Promise.reject(error); }
+        };
+        var origOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url) {
+            arguments[1] = pin(String(url));
+            return origOpen.apply(this, arguments);
+        };
+    })();
+    </script><script defer data-preview-inject="true" data-parent-origins="https://app.base44.com https://superagent.base44.com" data-app-id="6aae4ab0178e0c95482d0073" data-preview-type="sandbox" data-rum-app-id="db50c921-10c3-4f12-bccb-950fa174b708" data-rum-client-token="pubfe8a4f2972b412b4556fd67e77f82cb4" data-dd-site="datadoghq.com" src="https://app.base44.com/builder-bridge.js?t=1794643868"></script><script>
+    (function() {
+        var IGNORE = { SCRIPT: 1, STYLE: 1, LINK: 1, META: 1, NOSCRIPT: 1, TEMPLATE: 1 };
+        const fire = () => window.parent.postMessage({ type: 'IFRAME_CONTENT_READY' }, '*');
+        function check() {
+            var body = document.body;
+            if (!body) return false;
+            for (var idx = 0; idx < body.children.length; idx++) {
+                if (!IGNORE[body.children[idx].tagName]) return true;
+            }
+            return false;
+        }
+        function start() {
+            if (check()) { fire(); return; }
+            var observer = new MutationObserver(function() {
+                if (check()) { fire(); observer.disconnect(); }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+        }
+        if (document.body) { start(); }
+        else { document.addEventListener('DOMContentLoaded', start, { once: true }); }
+    })();
+    </script><script>
+    (function() {
+        if (window.self === window.top) return;
+        var APP_ID = "6aae4ab0178e0c95482d0073";
+        var PREVIEW_TYPE = "sandbox";
+        var on404 = false;
+        var booted = false;
+        function detect() { return !!document.querySelector('[data-source-location^="PageNotFound:"]'); }
+        function payload() { return { app_id: APP_ID, preview_type: PREVIEW_TYPE, url_path: window.location.pathname }; }
+        function tick() {
+            var now = detect();
+            if (now && !on404) {
+                on404 = true;
+                window.parent.postMessage({ type: 'PREVIEW_PAGE_NOT_FOUND', payload: payload() }, '*');
+            } else if (!now && (on404 || !booted)) {
+                // On first tick of a fresh document, emit a cleared signal even when
+                // not currently on a 404 — the parent may have latched is404=true from
+                // a previous document at the same URL (e.g. after an iframe reload).
+                on404 = false;
+                window.parent.postMessage({ type: 'PREVIEW_PAGE_NOT_FOUND_CLEARED', payload: payload() }, '*');
+            }
+            booted = true;
+        }
+        function start() {
+            tick();
+            new MutationObserver(tick).observe(document.body, { childList: true, subtree: true });
+        }
+        if (document.body) { start(); }
+        else { document.addEventListener('DOMContentLoaded', start, { once: true }); }
+    })();
+    </script><script>
+    (function() {
+        if (window.self === window.top) return;
+        function fire() { window.parent.postMessage({ type: 'REACT_ROOT_HAS_CHILDREN' }, '*'); }
+        function findRoot() {
+            return document.getElementById('root')
+                || document.getElementById('app')
+                || document.querySelector('[data-react-root]');
+        }
+        // One-shot: wait for DOMContentLoaded (static HTML parsed by then, so the
+        // Base44 convention <div id="root"> is either present or not coming),
+        // observe the root's childList until the first element child appears,
+        // then fire and disconnect. No tree-wide subtree observer.
+        function start() {
+            var root = findRoot();
+            if (!root) return;
+            if (root.childElementCount > 0) { fire(); return; }
+            var obs = new MutationObserver(function() {
+                if (root.childElementCount > 0) { fire(); obs.disconnect(); }
+            });
+            obs.observe(root, { childList: true });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', start, { once: true });
+        } else { start(); }
+    })();
+    </script><script>
+    (function() {
+        if (window.self === window.top) return;
+        function postUnsupported(reason) {
+            window.parent.postMessage({
+                type: 'IFRAME_FIRST_CONTENTFUL_PAINT_UNSUPPORTED',
+                payload: { reason: reason, userAgent: navigator.userAgent }
+            }, '*');
+        }
+        if (typeof PerformanceObserver === 'undefined') {
+            postUnsupported('no_performance_observer');
+            return;
+        }
+        try {
+            var obs = new PerformanceObserver(function(list) {
+                var entries = list.getEntries();
+                for (var i = 0; i < entries.length; i++) {
+                    if (entries[i].name === 'first-contentful-paint') {
+                        obs.disconnect();
+                        window.parent.postMessage({ type: 'IFRAME_FIRST_CONTENTFUL_PAINT' }, '*');
+                        return;
+                    }
+                }
+            });
+            obs.observe({ type: 'paint', buffered: true });
+        } catch (e) {
+            postUnsupported('observe_threw:' + (e && e.name ? e.name : 'Error'));
+        }
+    })();
+    </script><script>
+    (function() {
+        if (window.self === window.top) return;
+        var APP_ID = "6aae4ab0178e0c95482d0073";
+        var PREVIEW_TYPE = "sandbox";
+        var DEPS_PATH = '/node_modules/.vite/deps/';
+        var fired = false;
+        function isViteDep(url) {
+            return typeof url === 'string' && url.indexOf(DEPS_PATH) !== -1;
+        }
+        var confirmed = {};
+        function looksFailed(entry) {
+            // HTTP failure status (Chrome 109+).
+            if (entry.responseStatus && entry.responseStatus >= 400) return true;
+            // Aborted / blocked / network-error: request ran, nothing decoded.
+            // decodedBodySize === 0 distinguishes from cache hits (Safari has no
+            // deliveryType, so we can't rely on it to exclude cached responses).
+            return entry.transferSize === 0
+                && entry.decodedBodySize === 0
+                && entry.duration > 0
+                && entry.responseEnd > 0;
+        }
+        // WebKit has no responseStatus and zeroes every size on a cache hit, so the
+        // size heuristic alone flags every cached dep. Re-ask the server instead; a
+        // rejected HEAD proves nothing, WebKit aborts it when the frame navigates away.
+        function confirmThenReport(entry) {
+            if (confirmed[entry.name]) return;
+            confirmed[entry.name] = true;
+            fetch(entry.name, { method: 'HEAD', cache: 'no-store' }).then(function(res) {
+                var type = res.headers.get('content-type') || '';
+                if (res.status >= 400 || type.indexOf('text/html') !== -1) report(entry, res.status);
+            }, function() {});
+        }
+        function report(entry, confirmedStatus) {
+            if (fired) return;
+            fired = true;
+            var nativeBuffer = window.__base44_preview_native_failures;
+            if (nativeBuffer && typeof nativeBuffer.append === 'function') {
+                nativeBuffer.append('Failed to load module ' + entry.name);
+            }
+            window.parent.postMessage({
+                type: 'SANDBOX_VITE_DEPS_404',
+                payload: {
+                    app_id: APP_ID,
+                    preview_type: PREVIEW_TYPE,
+                    url: entry.name,
+                    initiator_type: entry.initiatorType,
+                    response_status: entry.responseStatus || confirmedStatus
+                }
+            }, '*');
+        }
+        new PerformanceObserver(function(list) {
+            if (fired) return;
+            var entries = list.getEntries();
+            for (var i = 0; i < entries.length; i++) {
+                if (isViteDep(entries[i].name) && looksFailed(entries[i])) {
+                    if ('responseStatus' in entries[i]) {
+                        report(entries[i]);
+                        return;
+                    }
+                    confirmThenReport(entries[i]);
+                }
+            }
+        }).observe({ type: 'resource', buffered: true });
+    })();
+    </script><script>
+    (function() {
+        if (typeof PerformanceObserver === 'undefined') return;
+        var reported = {};
+        // Only the app's own module trees may put an error over the preview. A page
+        // can load an optional classic script (analytics, a widget) that fails while
+        // the app renders perfectly well; that must not read as broken app code.
+        // Recording is deliberately wider than reporting — the console buffer keeps
+        // every failed module for diagnostics.
+        function isAppModule(path) {
+            return path.indexOf('/src/') === 0 || path.indexOf('/base44/') === 0;
+        }
+        function modulePath(url) {
+            try {
+                var path = new URL(url, window.location.href).pathname;
+                // The bridge probes this standard SDK path opportunistically;
+                // legacy/custom apps are allowed not to provide it.
+                if (path === '/src/api/base44Client.js') return '';
+                if (path.indexOf('/node_modules/.vite/deps/') !== -1) return '';
+                return /[.](?:[cm]?[jt]sx?)$/i.test(path) ? path : '';
+            } catch (e) {
+                return '';
+            }
+        }
+        new PerformanceObserver(function(list) {
+            var entries = list.getEntries();
+            for (var index = 0; index < entries.length; index++) {
+                var entry = entries[index];
+                if (entry.initiatorType !== 'script') continue;
+                var status = entry.responseStatus;
+                if (!status) continue;
+                var path = modulePath(entry.name);
+                if (!path) continue;
+                if (status < 400) {
+                    // Recovered (an HMR fix re-requests it). Forget it, or breaking the
+                    // same path again later this document would be silently suppressed.
+                    delete reported[path];
+                    continue;
+                }
+                var message = status === 404
+                    ? 'Module not found: ' + path
+                    : 'Module failed to load (' + status + '): ' + path;
+                var buffer = window.__base44_preview_native_failures;
+                if (buffer && typeof buffer.append === 'function') buffer.append(message);
+                if (!isAppModule(path) || reported[path] || window.self === window.top) continue;
+                reported[path] = true;
+                window.parent.postMessage({
+                    type: 'SANDBOX_MODULE_LOAD_FAILED',
+                    payload: { path: path, status: status, message: message }
+                }, '*');
+            }
+        }).observe({ type: 'resource', buffered: true });
+    })();
+    </script><script>
+    (function() {
+        if (window.self === window.top) return;
+        if (typeof performance === 'undefined' || typeof performance.getEntriesByType !== 'function') return;
+        var DEPS_PATH = '/node_modules/.vite/deps/';
+        var QUIESCENCE_MS = 1500;
+        var POLL_MS = 500;
+        var fired = false;
+        var intervalId = setInterval(function() {
+            if (fired) return;
+            var entries = performance.getEntriesByType('resource');
+            var lastDepEnd = 0;
+            for (var i = 0; i < entries.length; i++) {
+                if (entries[i].name.indexOf(DEPS_PATH) === -1) continue;
+                if (entries[i].responseEnd > lastDepEnd) lastDepEnd = entries[i].responseEnd;
+            }
+            if (lastDepEnd === 0) return;
+            if (performance.now() - lastDepEnd >= QUIESCENCE_MS) {
+                fired = true;
+                clearInterval(intervalId);
+                window.parent.postMessage({ type: 'IFRAME_VITE_DEPS_SETTLED' }, '*');
+            }
+        }, POLL_MS);
+    })();
+    </script><script>
+        window.__base44_sdk_attach = import("/src/api/base44Client.js").then(({ base44 }) => {
+            if (base44) {
+                Object.defineProperty(window, "base44_sdk", {
+                    value: base44,
+                    writable: false,
+                    configurable: true
+                });
+            }
+        }).catch((e) => {
+            // Some legacy/custom apps may not have the standard client module.
+            // Leave window.base44_sdk undefined; PreviewLens can fall back to UI/network checks.
+            window.parent.postMessage({ type: "PREVIEW_LENS_SDK_ATTACH_FAILED", error: String(e) }, "*");
+        });
+        </script><script type="module">
+        try {
+            const { createHotContext } = await import("/@vite/client");
+            const hot = createHotContext("/__builder-bridge-hmr");
+            const previewFEVersion = Number(new URLSearchParams(window.location.search).get("previewFE_version")) || 0;
+        
+            let wsOpenedAt = 0;
+            hot.on("vite:ws:connect", () => {
+                wsOpenedAt = Date.now();
+                window.parent.postMessage({ type: "SANDBOX_WS_CONNECT" }, "*");
+            });
+            hot.on("vite:ws:disconnect", () => {
+                let sw = null;
+                try { sw = navigator.serviceWorker; } catch (e) {}  // SecurityError where storage is denied
+                const staleClient = Date.now() - wsOpenedAt < 1000 && !!(sw && sw.controller);
+                window.parent.postMessage({ type: "SANDBOX_WS_DISCONNECT", payload: { stale_client: staleClient } }, "*");
+                if (!staleClient) return;
+                // Vite awaits this before it reloads, so the reload fetches fresh modules.
+                return Promise.race([
+                    Promise.all([
+                        sw.getRegistrations().then((regs) => Promise.all(regs.map((reg) => reg.unregister()))),
+                        caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key)))),
+                    ]),
+                    new Promise((resolve) => setTimeout(resolve, 2000)),
+                ]).catch(() => {});
+            });
+    
+            hot.on("vite:error", (payload) => {
+                const err = payload && payload.err && typeof payload.err === "object" ? payload.err : {};
+                const message = typeof err.message === "string" ? err.message : "Unknown build error";
+                const plugin = typeof err.plugin === "string" ? `[plugin:${err.plugin}] ` : "";
+                const details = [`Vite build error: ${plugin}${message}`];
+                const loc = err.loc && typeof err.loc === "object" ? err.loc : null;
+                let file = loc && typeof loc.file === "string"
+                    ? loc.file
+                    : (typeof err.id === "string" ? err.id : "");
+                if (file) {
+                    file = file.split("?")[0];
+                    if (loc && Number.isFinite(loc.line) && Number.isFinite(loc.column)) {
+                        file += `:${loc.line}:${loc.column}`;
+                    }
+                    details.push(`File: ${file}`);
+                }
+                if (typeof err.frame === "string" && err.frame.trim()) details.push(err.frame.trim());
+                if (typeof err.stack === "string" && err.stack.trim()) details.push(err.stack.trim());
+
+                const nativeBuffer = window.__base44_preview_native_failures;
+                if (!nativeBuffer || typeof nativeBuffer.append !== "function") return;
+                nativeBuffer.append(details.join(String.fromCharCode(10)));
+            });
+    
+            let hotUpdateStartedAt = 0;
+            hot.on("vite:beforeUpdate", () => { hotUpdateStartedAt = performance.now(); });
+            hot.on("vite:afterUpdate", () => {
+                const startedAt = hotUpdateStartedAt;
+                requestAnimationFrame(() => {
+                    window.parent.postMessage({ type: "SANDBOX_HOT_UPDATE_PAINTED", duration_ms: performance.now() - startedAt }, "*");
+                });
+            });
+    
+            // The pending promise holds Vite's pageReload (it awaits listeners) so the parent swaps a fresh iframe; an editor that doesn't announce previewFE_version falls back to today's in-place reload.
+            hot.on("vite:beforeFullReload", () => {
+                window.parent.postMessage({ type: "sandbox:beforeFullReload" }, "*");
+                if (previewFEVersion > 0) return new Promise(() => {});
+            });
+        } catch (e) {
+            window.parent.postMessage({ type: "SANDBOX_WS_ATTACH_FAILED", error: String(e) }, "*");
+        }
+        </script><script>
+        (function() {
+            var INTERVAL_MS = 30 * 60 * 1000;
+            var last = Date.now();
+            function renew() {
+                last = Date.now();
+                fetch("/base44-preview-session", {
+                    credentials: 'same-origin', cache: 'no-store', headers: {"x-base44-preview-keepalive": "1"}
+                }).then(function(r) {
+                    if ((r.status === 401 || r.status === 403) && window.self !== window.top) window.parent.postMessage({ type: 'preview:requestRefresh' }, '*');
+                }).catch(function() {});
+            }
+            setInterval(renew, INTERVAL_MS);
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible' && Date.now() - last >= INTERVAL_MS) renew();
+            });
+        })();
+        </script><script>
+    (function() {
+        if (window.self === window.top) return;
+        var lastUrl = window.location.href;
+        function notify() {
+            var url = window.location.href;
+            if (url === lastUrl) return;
+            lastUrl = url;
+            window.parent.postMessage({ type: 'APP_CHANGED_URL', url: url }, '*');
+        }
+        var origPush = history.pushState.bind(history);
+        history.pushState = function() { origPush.apply(history, arguments); notify(); };
+        var origReplace = history.replaceState.bind(history);
+        history.replaceState = function() { origReplace.apply(history, arguments); notify(); };
+        window.addEventListener('popstate', notify);
+        window.parent.postMessage({ type: 'APP_CHANGED_URL', url: window.location.href }, '*');
+    })();
+    </script></head>
+<body>
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo"><img src="icon.png" alt="Queeny Store logo"></div>
+    <div class="brand"><span id="brandName">Queeny Store</span><small>Point of Sale</small></div>
+    <div class="hdr-tag">Offline</div>
+    <div class="hdr-user" id="hdrUser" style="display:none">
+      <span id="hdrUserName"></span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+</header>
+<main id="view"></main>
+<div id="modal-root"></div>
+<div id="toast" class="toast"></div>
+<script src="seed-data.js"></script>
+<script>
+/* ================= storage ================= */
+var APP_KEY = 'queeny.';
+function readStore(k, fb){ try{ var raw = localStorage.getItem(APP_KEY + k); return raw ? JSON.parse(raw) : fb; }catch(e){ return fb; } }
+function writeStore(k, v){ try{ localStorage.setItem(APP_KEY + k, JSON.stringify(v)); }catch(e){ alert('Puno na ang storage ng device.'); } }
+
+/* Cloud sync connection (naka-save sa localStorage) */
+var CLOUD_DEFAULT = { url:'https://supabase.co', key:'', storeId:'main-store' };
+var cloud = { url:CLOUD_DEFAULT.url, key:CLOUD_DEFAULT.key, storeId:CLOUD_DEFAULT.storeId };
+var cloudMsg = '', cloudTimer = null;
+
+var products = [], sales = [], accounts = [], utangTxns = [];
+var settings = { storeName:'Queeny Store', managerCode:'3105', counter:1 };
+var cart = [];
+var ui = { cashierQ:'', productsQ:'' };
+var payMethod = 'cash', payPaid = '', payAccount = '';
+
+function loadAll(){
+  products  = readStore('products', []);
+  sales     = readStore('sales', []);
+  accounts  = readStore('accounts', []);
+  utangTxns = readStore('utang', []);
+  gcash     = readStore('gcash', []);
+  settings  = Object.assign({ storeName:'Queeny Store', managerCode:'3105', counter:1 }, readStore('settings', {}));
+  cloud     = Object.assign({ url:CLOUD_DEFAULT.url, key:CLOUD_DEFAULT.key, storeId:CLOUD_DEFAULT.storeId }, readStore('cloud', {}));
+  ensureDefaultUser();
+  if(!readStore('seeded', false)) seed();
+}
+/* Dual-save: localStorage muna (100% offline), tapos background upload sa cloud. */
+function persist(skipCloud){
+  writeStore('products', products);
+  writeStore('sales', sales);
+  writeStore('accounts', accounts);
+  writeStore('utang', utangTxns);
+  writeStore('gcash', gcash);
+  writeStore('settings', settings);
+  if(!skipCloud) queueCloudSync();
+}
+function seed(){
+  var d = window.SEED_DATA;
+  if(d){
+    products  = d.products  || [];
+    sales     = d.sales     || [];
+    accounts  = d.accounts  || [];
+    utangTxns = d.utang     || [];
+    gcash     = d.gcash     || [];
+    if(d.settings) settings = Object.assign(settings, d.settings);
+    persist();
+    writeStore('seeded', true);
+    return;
+  }
+  /* Walang seed-data.js: maliit na sample catalog lang ang ilalagay. */
+  products = [
+    { id:uid(), name:'Coke Sakto 200ml',        price:20, cost:15, stock:24, barcode:'4801981112345', category:'Beverage' },
+    { id:uid(), name:'Lucky Me Pancit Canton',  price:16, cost:12, stock:40, barcode:'4800016000012', category:'Noodles' },
+    { id:uid(), name:'Kopiko Black 3in1',       price:9,  cost:7,  stock:60, barcode:'8992753100011', category:'Coffee' },
+    { id:uid(), name:'Skyflakes Crackers',      price:12, cost:9,  stock:30, barcode:'4800092660012', category:'Snacks' },
+    { id:uid(), name:'Bear Brand 33g',          price:14, cost:11, stock:36, barcode:'4800361410017', category:'Milk' },
+    { id:uid(), name:'Piattos Cheese 40g',      price:22, cost:17, stock:18, barcode:'4800016640012', category:'Snacks' }
+  ];
+  writeStore('products', products);
+  writeStore('seeded', true);
+}
+
+/* ================= helpers ================= */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function round2(n){ return Math.round((Number(n)||0) * 100) / 100; }
+function peso(n){ return '\u20b1' + (Number(n)||0).toLocaleString('en-PH', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function fmtDate(iso){ var d = new Date(iso); return d.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' }); }
+function fmtTime(iso){ var d = new Date(iso); return d.toLocaleTimeString('en-PH', { hour:'numeric', minute:'2-digit' }); }
+function dayKey(iso){ var d = new Date(iso); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function todayKey(){ return dayKey(new Date().toISOString()); }
+function esc(s){
+  return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c){
+    return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+  });
+}
+function $(sel, root){ return (root || document).querySelector(sel); }
+function toast(msg){
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(function(){ el.classList.remove('show'); }, 2000);
+}
+
+/* ================= modal ================= */
+function modal(html){
+  document.getElementById('modal-root').innerHTML =
+    '<div class="overlay" id="ovl"><div class="sheet">' + html + '</div></div>';
+  var ovl = document.getElementById('ovl');
+  ovl.addEventListener('click', function(e){ if(e.target === ovl) closeModal(); });
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML = ''; }
+
+function askCode(message, cb){
+  modal(
+    '<h3 class="m-title">Manager Override</h3>' +
+    '<p class="m-text">' + esc(message) + '</p>' +
+    '<label class="lbl">Manager code</label>' +
+    '<input id="mcode" class="input" type="password" inputmode="numeric" placeholder="****" autocomplete="off">' +
+    '<p class="err" id="merr"></p>' +
+    '<div class="m-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+    '<button class="btn btn-primary" onclick="checkCode()">Confirm</button></div>'
+  );
+  window.__codeCb = cb;
+  var inp = document.getElementById('mcode');
+  if(inp){ inp.focus(); }
+}
+function checkCode(){
+  var v = (document.getElementById('mcode').value || '').trim();
+  if(v !== String(settings.managerCode)){
+    document.getElementById('merr').textContent = 'Mali ang manager code.';
+    return;
+  }
+  var cb = window.__codeCb;
+  window.__codeCb = null;
+  closeModal();
+  if(cb) cb();
+}
+
+/* ================= accounts (offline login) ================= */
+var USERS_KEY = 'app_users';
+var SESSION_KEY = 'currentUser';
+var authTab = 'login';
+var authMsg = '';
+
+function loadUsers(){
+  try{
+    var raw = localStorage.getItem(USERS_KEY);
+    var list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  }catch(e){ return []; }
+}
+function saveUsers(list){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(list)); }catch(e){} }
+function currentUser(){
+  try{ var raw = localStorage.getItem(SESSION_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+}
+function setCurrentUser(u){
+  try{
+    if(u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
+    else localStorage.removeItem(SESSION_KEY);
+  }catch(e){}
+}
+/* Default account para hindi ma-lock out kahit walang na-register. */
+function ensureDefaultUser(){
+  var users = loadUsers();
+  if(users.length) return users;
+  users = [{ id:uid(), name:'Store Admin', username:'admin', password:'1234', role:'Admin', created:new Date().toISOString() }];
+  saveUsers(users);
+  return users;
+}
+function setAuthTab(t){ authTab = t; authMsg = ''; render(); }
+function setAuthMsg(msg){ authMsg = msg; var el = document.getElementById('authMsg'); if(el) el.textContent = msg; }
+function loginFormHtml(){
+  return '<form onsubmit="doLogin(event)">' +
+    '<label class="lbl">Username</label>' +
+    '<input id="lgUser" class="input" autocomplete="username" placeholder="admin">' +
+    '<label class="lbl">Password / PIN</label>' +
+    '<input id="lgPass" class="input" type="password" autocomplete="current-password" placeholder="****">' +
+    '<p class="err" id="authErr"></p>' +
+    '<button class="btn btn-primary btn-block" type="submit">Login</button>' +
+  '</form>';
+}
+function registerFormHtml(){
+  return '<form onsubmit="doRegister(event)">' +
+    '<label class="lbl">Full Name</label>' +
+    '<input id="rgName" class="input" autocomplete="name">' +
+    '<label class="lbl">Username</label>' +
+    '<input id="rgUser" class="input" autocomplete="username">' +
+    '<label class="lbl">Password / 4-digit PIN</label>' +
+    '<input id="rgPass" class="input" type="password" autocomplete="new-password">' +
+    '<label class="lbl">Role</label>' +
+    '<select id="rgRole" class="input"><option>Admin</option><option>Staff</option></select>' +
+    '<p class="err" id="authErr"></p>' +
+    '<button class="btn btn-primary btn-block" type="submit">Create Account</button>' +
+  '</form>';
+}
+function viewAuth(){
+  return '<div class="auth">' +
+  '<div class="page-head"><div><h1 class="h1">' + (authTab === 'login' ? 'Login' : 'Register') + '</h1>' +
+    '<p class="sub">' + esc(settings.storeName || 'Queeny Store') + ' \u00b7 Offline POS</p></div></div>' +
+  '<div class="card">' +
+    '<div class="tabs" style="margin-top:0">' +
+      '<button class="tab' + (authTab === 'login' ? ' active' : '') + '" onclick="setAuthTab(\'login\')">Login</button>' +
+      '<button class="tab' + (authTab === 'register' ? ' active' : '') + '" onclick="setAuthTab(\'register\')">Register</button>' +
+    '</div>' +
+    (authTab === 'login' ? loginFormHtml() : registerFormHtml()) +
+  '</div>' +
+  '<div class="card"><h2 class="h2">Sync Accounts from Cloud</h2>' +
+    '<p class="m-text">Para makapag-login sa bagong device, i-download ang mga account mula sa Supabase.</p>' +
+    '<button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="syncAccounts()">Sync Accounts from Cloud</button>' +
+    '<p class="row-sub" id="authMsg" style="margin-top:8px">' + esc(authMsg || '') + '</p>' +
+  '</div>' +
+  '<p class="foot">' + loadUsers().length + ' account(s) sa device na ito</p>' +
+  '</div>';
+}
+function doLogin(e){
+  e.preventDefault();
+  var uname = (document.getElementById('lgUser').value || '').trim().toLowerCase();
+  var pass  = (document.getElementById('lgPass').value || '').trim();
+  var hit = loadUsers().filter(function(x){
+    return String(x.username || '').toLowerCase() === uname && String(x.password || '') === pass;
+  })[0];
+  if(!hit){ document.getElementById('authErr').textContent = 'Mali ang username o password.'; return; }
+  setCurrentUser({ id:hit.id, name:hit.name, username:hit.username, role:hit.role });
+  authMsg = '';
+  cart = [];
+  ui.cashierQ = ''; ui.productsQ = '';
+  render();
+  toast('Kumusta, ' + (hit.name || hit.username) + '!');
+}
+function doRegister(e){
+  e.preventDefault();
+  var name  = (document.getElementById('rgName').value || '').trim();
+  var uname = (document.getElementById('rgUser').value || '').trim();
+  var pass  = (document.getElementById('rgPass').value || '').trim();
+  var errEl = document.getElementById('authErr');
+  if(!name || !uname || !pass){ errEl.textContent = 'Kailangan ang pangalan, username at password.'; return; }
+  if(pass.length < 4){ errEl.textContent = 'Hindi bababa sa 4 na karakter ang password/PIN.'; return; }
+  var users = loadUsers();
+  if(users.some(function(x){ return String(x.username || '').toLowerCase() === uname.toLowerCase(); })){
+    errEl.textContent = 'May account na ang username na ito.';
+    return;
+  }
+  var user = { id:uid(), name:name, username:uname, password:pass, role:document.getElementById('rgRole').value, created:new Date().toISOString() };
+  users.push(user);
+  saveUsers(users);
+  setCurrentUser({ id:user.id, name:user.name, username:user.username, role:user.role });
+  authTab = 'login'; authMsg = '';
+  render();
+  toast('Na-register at naka-login na.');
+  queueCloudSync();
+}
+function logout(){
+  setCurrentUser(null);
+  cart = [];
+  authTab = 'login';
+  authMsg = '';
+  render();
+  toast('Naka-logout ka na.');
+}
+function syncAccounts(){
+  if(!cloudReady()){ setAuthMsg('I-set muna ang Supabase URL at Publishable Key sa Cloud Sync tab (pagkatapos mag-login).'); return; }
+  if(!navigator.onLine){ setAuthMsg('Walang internet \u2014 hindi maka-sync.'); return; }
+  setAuthMsg('Nag-sync ng accounts\u2026');
+  var url = cloudBase() + '/rest/v1/store_sync?id=eq.' + encodeURIComponent(cloud.storeId) + '&select=*';
+  fetch(url, { headers: { 'apikey': cloud.key, 'Authorization': 'Bearer ' + cloud.key } })
+    .then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(rows){
+      var local = loadUsers(), added = 0;
+      (rows || []).forEach(function(row){
+        var incoming = (row && row.data && row.data.users) || [];
+        incoming.forEach(function(u){
+          if(!u || !u.username) return;
+          if(local.some(function(x){ return String(x.username || '').toLowerCase() === String(u.username).toLowerCase(); })) return;
+          local.push(u);
+          added++;
+        });
+      });
+      saveUsers(local);
+      render();
+      setAuthMsg(added + ' account(s) ang na-sync mula sa cloud.');
+      toast(added + ' account(s) na-sync.');
+    })
+    .catch(function(err){
+      setAuthMsg('Hindi na-sync: ' + ((err && err.message) || 'error'));
+    });
+}
+
+/* ================= router ================= */
+var NAV = [
+  ['dashboard', '\uD83C\uDFE0 Dashboard'],
+  ['cashier',   '\uD83D\uDED2 Cashier'],
+  ['utang',     '\uD83D\uDCD2 Utang'],
+  ['sales',     '\uD83E\uDDFE Sales'],
+  ['products',  '\uD83D\uDCE6 Products'],
+  ['gcash',     '\uD83D\uDCB3 GCash'],
+  ['cloud',     '\u2601\uFE0F Cloud Sync'],
+  ['settings',  '\u2699\uFE0F Settings']
+];
+function navHtml(active){
+  return NAV.map(function(n){
+    return '<a href="#/' + n[0] + '" class="' + (n[0] === active ? 'active' : '') + '">' + n[1] + '</a>';
+  }).join('');
+}
+function render(){
+  var me = currentUser();
+  var navEl = document.getElementById('nav');
+  var userEl = document.getElementById('hdrUser');
+  document.getElementById('brandName').textContent = settings.storeName || 'Queeny Store';
+  if(navEl) navEl.style.display = me ? 'flex' : 'none';
+  if(userEl) userEl.style.display = me ? 'flex' : 'none';
+  if(me && document.getElementById('hdrUserName')){
+    document.getElementById('hdrUserName').textContent = (me.name || me.username) + ' \u00b7 ' + (me.role || 'Staff');
+  }
+
+  /* Walang naka-login: Login / Register screen muna. */
+  if(!me){
+    document.getElementById('view').innerHTML = viewAuth();
+    return;
+  }
+
+  var hash = (location.hash || '#/dashboard').replace(/^#/, '');
+  var parts = hash.split('/').filter(Boolean);
+  var r = parts[0] || 'dashboard';
+  var html = '';
+  if(r === 'cashier') html = viewCashier();
+  else if(r === 'utang') html = parts[1] ? viewAccount(parts[1]) : viewUtang();
+  else if(r === 'sales') html = viewSales();
+  else if(r === 'products') html = viewProducts();
+  else if(r === 'gcash') html = viewGcash();
+  else if(r === 'cloud') html = viewCloud();
+  else if(r === 'settings') html = viewSettings();
+  else html = viewDashboard();
+
+  document.getElementById('brandName').textContent = settings.storeName || 'Queeny Store';
+  document.getElementById('nav').innerHTML = navHtml((r === 'dashboard') ? 'dashboard' : r);
+  document.getElementById('view').innerHTML = html;
+}
+
+/* ================= dashboard ================= */
+var VERSES = [
+  'Filipos 4:13 \u2014 Kaya kong gawin ang lahat ng bagay sa pamamagitan niya na nagpapalakas sa akin.',
+  'Awit 37:4 \u2014 Magalak ka sa Panginoon, at ibibigay niya sa iyo ang nais ng iyong puso.',
+  'Kawikaan 22:29 \u2014 Nakikita mo ba ang taong matalino sa kanyang gawain? Siya ay maninindigan sa harap ng mga hari.',
+  'Jeremias 29:11 \u2014 Alam ko ang mga plano ko para sa inyo, mga planong magpapabuti at hindi mapaminsala.',
+  'Mga Taga-Filipos 4:6 \u2014 Huwag kayong mabalisa sa anuman, kundi sa lahat ng bagay, dalangin at panalangin.',
+  'Kawikaan 13:11 \u2014 Ang kayamanang natipon sa sipag ay dumarami.',
+  'Colosas 3:23 \u2014 Anuman ang inyong gawin, gawin ninyo nang buong puso na parang sa Panginoon.'
+];
+function verseOfDay(){
+  var start = new Date(new Date().getFullYear(), 0, 0);
+  var day = Math.floor((new Date() - start) / 86400000);
+  return VERSES[day % VERSES.length];
+}
+function viewDashboard(){
+  var tKey = todayKey();
+  var valid = sales.filter(function(s){ return !s.voided; });
+  var today = valid.filter(function(s){ return dayKey(s.date) === tKey; });
+  var todayTotal = round2(today.reduce(function(s,x){ return s + x.total; }, 0));
+  var receivables = round2(accounts.reduce(function(s,a){ return s + (a.balance || 0); }, 0));
+  var withBalance = accounts.filter(function(a){ return (a.balance || 0) > 0; }).length;
+  var low = products.filter(function(p){ return (p.stock || 0) > 0 && p.stock <= 5; });
+  var recent = valid.slice().sort(function(a,b){ return b.date.localeCompare(a.date); }).slice(0,5);
+
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">Dashboard</h1>' +
+  '<p class="sub">' + new Date().toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' }) + '</p></div>' +
+  '<a class="btn btn-primary" href="#/cashier">Bagong Benta</a></div>' +
+
+  '<div class="hero"><p class="hero-label">Benta Ngayon</p>' +
+  '<p class="hero-big">' + peso(todayTotal) + '</p>' +
+  '<div class="hero-row">' +
+    '<div class="mini"><div class="mini-ic">\uD83E\uDDFE</div><div><p class="mini-label">Transactions</p><p class="mini-val">' + today.length + '</p></div></div>' +
+    '<div class="mini"><div class="mini-ic">\uD83D\uDCD2</div><div><p class="mini-label">Utang Balance</p><p class="mini-val">' + peso(receivables) + '</p></div></div>' +
+  '</div></div>' +
+
+  '<div class="grid" style="margin-top:12px">' +
+    '<div class="kpi"><p class="kpi-label">Utang Accounts</p><p class="kpi-val">' + withBalance + '</p><p class="row-sub">may balanse</p></div>' +
+    '<div class="kpi"><p class="kpi-label">Products</p><p class="kpi-val">' + products.length + '</p><p class="row-sub">' + low.length + ' low stock</p></div>' +
+    '<div class="kpi"><p class="kpi-label">All-time Sales</p><p class="kpi-val sm">' + peso(valid.reduce(function(s,x){ return s + x.total; }, 0)) + '</p><p class="row-sub">' + valid.length + ' sales</p></div>' +
+  '</div>' +
+
+  '<div class="card" style="margin-top:12px"><p class="mini-label" style="color:var(--muted)">Daily Blessing</p>' +
+  '<p class="m-text" style="margin-top:6px">' + esc(verseOfDay()) + '</p></div>' +
+
+  '<div class="card" style="margin-top:12px"><div class="cart-head"><h2 class="h2">Recent Sales</h2><a class="btn btn-sm btn-ghost" href="#/sales">Lahat</a></div>' +
+  (recent.length ? recent.map(function(s){
+    return '<div class="row" style="cursor:pointer" onclick="openReceipt(\'' + s.id + '\')">' +
+      '<div class="row-main"><p class="row-title">' + esc(s.no) + ' \u00b7 ' + s.items.length + ' item(s)</p>' +
+      '<p class="row-sub">' + fmtDate(s.date) + ' \u00b7 ' + fmtTime(s.date) + '</p></div>' +
+      '<div class="row-val">' + peso(s.total) + '<div style="margin-top:4px">' + (s.payment === 'utang' ? '<span class="badge b-utang">Utang</span>' : '<span class="badge b-cash">Cash</span>') + '</div></div></div>';
+  }).join('') : '<p class="empty">Wala pang benta.</p>') + '</div>' +
+
+  '<div class="card" style="margin-top:12px"><div class="cart-head"><h2 class="h2">Low Stock</h2><a class="btn btn-sm btn-ghost" href="#/products">Products</a></div>' +
+  (low.length ? low.map(function(p){
+    return '<div class="row"><div class="row-main"><p class="row-title">' + esc(p.name) + '</p>' +
+      '<p class="row-sub">' + esc(p.category || 'Uncategorized') + '</p></div>' +
+      '<div class="row-val">' + (p.stock || 0) + ' left</div></div>';
+  }).join('') : '<p class="empty">Maayos ang stock ng lahat ng produkto.</p>') + '</div>' +
+
+  '<p class="foot">' + esc(settings.storeName) + ' \u00b7 Offline POS</p>';
+}
+
+/* ================= cashier ================= */
+function filterProducts(q){
+  var t = (q || '').toLowerCase().trim();
+  if(!t) return products;
+  return products.filter(function(p){
+    return (p.name || '').toLowerCase().indexOf(t) >= 0
+        || (p.barcode || '').indexOf(t) >= 0
+        || (p.category || '').toLowerCase().indexOf(t) >= 0;
+  });
+}
+function prodCard(p){
+  var tracked = (p.stock || 0) > 0;
+  return '<button class="prod" onclick="addToCart(\'' + p.id + '\')">' +
+    '<span class="prod-name">' + esc(p.name) + '</span>' +
+    '<span class="prod-price">' + peso(p.price) + '</span>' +
+    '<span class="prod-stock">' + (tracked ? 'Stock ' + p.stock : 'Walang stock tracking') + '</span></button>';
+}
+function gridHtml(q){
+  var list = filterProducts(q);
+  return list.length ? list.map(prodCard).join('') : '<p class="empty">Walang nahanap na produkto.</p>';
+}
+function cashierSearch(v, el){
+  ui.cashierQ = v;
+  var box = document.getElementById('gridBox');
+  if(box) box.innerHTML = gridHtml(v);
+}
+function cashierKey(e){
+  if(e.key !== 'Enter') return;
+  e.preventDefault();
+  var v = (e.target.value || '').trim();
+  if(!v) return;
+  var hit = products.filter(function(p){ return p.barcode === v; })[0];
+  if(!hit){
+    var list = filterProducts(v);
+    if(list.length === 1) hit = list[0];
+  }
+  if(hit){
+    addToCart(hit.id);
+    ui.cashierQ = '';
+    e.target.value = '';
+    var box = document.getElementById('gridBox');
+    if(box) box.innerHTML = gridHtml('');
+  }
+}
+function cartTotal(){ return round2(cart.reduce(function(s,c){ return s + (c.price * c.qty); }, 0)); }
+function cartCount(){ return cart.reduce(function(s,c){ return s + c.qty; }, 0); }
+function addToCart(id){
+  var p = products.filter(function(x){ return x.id === id; })[0];
+  if(!p) return;
+  var line = cart.filter(function(c){ return c.product_id === id; })[0];
+  var inCart = line ? line.qty : 0;
+  if((p.stock || 0) > 0 && inCart >= p.stock){ toast('Kulang ang stock.'); return; }
+  if(line) line.qty += 1;
+  else cart.push({ product_id:id, name:p.name, price:p.price, qty:1 });
+  render();
+}
+function changeQty(id, delta){
+  var p = products.filter(function(x){ return x.id === id; })[0];
+  var line = cart.filter(function(c){ return c.product_id === id; })[0];
+  if(!line) return;
+  var next = line.qty + delta;
+  if(next <= 0){ cart = cart.filter(function(c){ return c.product_id !== id; }); render(); return; }
+  if(p && (p.stock || 0) > 0 && next > p.stock){ toast('Kulang ang stock.'); return; }
+  line.qty = next;
+  render();
+}
+function cartRow(c){
+  return '<div class="cart-line"><div class="row-main"><p class="row-title">' + esc(c.name) + '</p>' +
+    '<p class="row-sub">' + peso(c.price) + ' \u00d7 ' + c.qty + '</p></div>' +
+    '<div class="qty"><button onclick="changeQty(\'' + c.product_id + '\',-1)">\u2212</button>' +
+    '<span>' + c.qty + '</span>' +
+    '<button onclick="changeQty(\'' + c.product_id + '\',1)">+</button></div>' +
+    '<div class="row-val" style="min-width:66px">' + peso(c.price * c.qty) + '</div></div>';
+}
+function viewCashier(){
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">Cashier</h1><p class="sub">Pumili ng produkto o i-scan ang barcode</p></div></div>' +
+  '<div class="cashier"><section><div class="card">' +
+    '<input class="input" id="q" placeholder="Hanapin o i-scan ang barcode\u2026" value="' + esc(ui.cashierQ) + '" oninput="cashierSearch(this.value)" onkeydown="cashierKey(event)">' +
+    '<div class="prod-grid" id="gridBox">' + gridHtml(ui.cashierQ) + '</div>' +
+  '</div></section><aside><div class="card cart-card">' +
+    '<div class="cart-head"><h2 class="h2">Cart</h2><span class="pill">' + cartCount() + ' item(s)</span></div>' +
+    (cart.length ? cart.map(cartRow).join('') : '<p class="empty">Wala pang laman ang cart.</p>') +
+    '<div class="tot"><span>Total</span><strong>' + peso(cartTotal()) + '</strong></div>' +
+    '<button class="btn btn-primary btn-block" style="margin-top:12px" onclick="openCheckout()"' + (cart.length ? '' : ' disabled') + '>Bayaran</button>' +
+  '</div></aside></div>';
+}
+function openCheckout(){
+  if(!cart.length) return;
+  payMethod = 'cash'; payPaid = ''; payAccount = '';
+  modal('<h3 class="m-title">Bayaran \u00b7 ' + peso(cartTotal()) + '</h3>' +
+    '<div class="tabs">' +
+      '<button class="tab active" id="tabCash" onclick="setPayMethod(\'cash\')">Cash</button>' +
+      '<button class="tab" id="tabUtang" onclick="setPayMethod(\'utang\')">Utang</button>' +
+    '</div><div id="payBody"></div>');
+  renderPayBody();
+}
+function setPayMethod(m){
+  payMethod = m;
+  var c = document.getElementById('tabCash'), u = document.getElementById('tabUtang');
+  if(c && u){
+    c.className = 'tab' + (m === 'cash' ? ' active' : '');
+    u.className = 'tab' + (m === 'utang' ? ' active' : '');
+  }
+  renderPayBody();
+}
+function renderPayBody(){
+  var body = document.getElementById('payBody');
+  if(!body) return;
+  var total = cartTotal();
+  if(payMethod === 'cash'){
+    body.innerHTML =
+      '<label class="lbl">Halaga ng binayad</label>' +
+      '<input class="input" id="paid" inputmode="decimal" value="' + esc(payPaid) + '" placeholder="0.00" oninput="onPaid(this.value)">' +
+      '<div class="quick">' +
+        [20,50,100,200,500,1000].map(function(v){ return '<button class="chip" onclick="setPaid(' + v + ')">' + peso(v) + '</button>'; }).join('') +
+      '</div>' +
+      '<div class="tot"><span>Sukli</span><strong id="changeVal">' + peso(Math.max(0, (Number(payPaid) || 0) - total)) + '</strong></div>' +
+      '<p class="err" id="payErr"></p>' +
+      '<div class="m-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+      '<button class="btn btn-primary" onclick="completeSale()">Tapusin</button></div>';
+  } else {
+    body.innerHTML =
+      '<label class="lbl">Pumili ng utang account</label>' +
+      '<select class="input" id="acct" onchange="payAccount=this.value">' +
+        '<option value="">\u2014 Pumili ng account \u2014</option>' +
+        accounts.map(function(a){ return '<option value="' + a.id + '">' + esc(a.name) + ' \u00b7 ' + peso(a.balance) + '</option>'; }).join('') +
+      '</select>' +
+      '<div class="tot"><span>Idadagdag sa utang</span><strong>' + peso(total) + '</strong></div>' +
+      '<p class="err" id="payErr"></p>' +
+      '<div class="m-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+      '<button class="btn btn-primary" onclick="completeSale()">I-record ang Utang</button></div>';
+  }
+}
+function onPaid(v){
+  payPaid = v;
+  var total = cartTotal();
+  var el = document.getElementById('changeVal');
+  if(el) el.textContent = peso(Math.max(0, (Number(v) || 0) - total));
+}
+function setPaid(v){
+  payPaid = String(v);
+  var inp = document.getElementById('paid');
+  if(inp) inp.value = payPaid;
+  onPaid(payPaid);
+}
+function completeSale(){
+  var total = cartTotal();
+  if(!cart.length) return;
+  var errEl = document.getElementById('payErr');
+  var now = new Date().toISOString();
+  var utangId = '';
+
+  if(payMethod === 'utang'){
+    if(!payAccount){ if(errEl) errEl.textContent = 'Pumili ng account.'; return; }
+    var acct = accounts.filter(function(a){ return a.id === payAccount; })[0];
+    if(!acct){ if(errEl) errEl.textContent = 'Hindi mahanap ang account.'; return; }
+    acct.balance = round2((acct.balance || 0) + total);
+    utangId = uid();
+    utangTxns.push({
+      id: utangId,
+      account_id: acct.id,
+      account_name: acct.name,
+      type: 'purchase',
+      amount: total,
+      balance_after: acct.balance,
+      items: cart.map(function(c){ return { product_id:c.product_id, name:c.name, unit_price:c.price, qty:c.qty, subtotal:round2(c.price * c.qty) }; }),
+      note: '', voided: false, date: now
+    });
+  } else {
+    var paid = Number(payPaid) || 0;
+    if(paid < total){ if(errEl) errEl.textContent = 'Kulang ang bayad.'; return; }
+  }
+
+  var sale = {
+    id: uid(),
+    no: 'S' + String(settings.counter || 1).padStart(4, '0'),
+    date: now,
+    items: cart.map(function(c){ return { product_id:c.product_id, name:c.name, price:c.price, qty:c.qty, subtotal:round2(c.price * c.qty) }; }),
+    subtotal: total,
+    total: total,
+    payment: payMethod,
+    account_id: payMethod === 'utang' ? payAccount : '',
+    account_name: payMethod === 'utang' ? (accounts.filter(function(a){ return a.id === payAccount; })[0] || {}).name || '' : '',
+    amount_paid: payMethod === 'cash' ? (Number(payPaid) || 0) : total,
+    change: payMethod === 'cash' ? round2((Number(payPaid) || 0) - total) : 0,
+    utang_id: utangId,
+    voided: false
+  };
+  cart.forEach(function(c){
+    var p = products.filter(function(x){ return x.id === c.product_id; })[0];
+    if(p && (p.stock || 0) > 0) p.stock = Math.max(0, p.stock - c.qty);
+  });
+  sales.push(sale);
+  settings.counter = (settings.counter || 1) + 1;
+  persist();
+
+  cart = []; payPaid = ''; payAccount = '';
+  closeModal();
+  render();
+  openReceipt(sale.id);
+  toast('Nabenta! ' + peso(sale.total));
+}
+
+/* ================= receipts ================= */
+function receiptHtml(s){
+  return '<div class="receipt">' +
+    '<div class="r-head"><strong>' + esc(settings.storeName) + '</strong><div class="r-small">Sari-Sari Store</div></div>' +
+    '<div class="r-small">' + esc(s.no) + ' \u00b7 ' + fmtDate(s.date) + ' ' + fmtTime(s.date) + '</div>' +
+    '<div class="r-line"></div>' +
+    s.items.map(function(i){
+      return '<div class="r-item"><span>' + esc(i.name) + ' \u00d7' + i.qty + '</span><span>' + peso(i.subtotal) + '</span></div>';
+    }).join('') +
+    '<div class="r-line"></div>' +
+    '<div class="r-item r-total"><span>TOTAL</span><span>' + peso(s.total) + '</span></div>' +
+    '<div class="r-item"><span>' + (s.payment === 'utang' ? 'Utang' : 'Cash') + '</span><span>' +
+      (s.payment === 'utang' ? esc(s.account_name || '') : peso(s.amount_paid)) + '</span></div>' +
+    (s.payment === 'cash' ? '<div class="r-item"><span>Sukli</span><span>' + peso(s.change) + '</span></div>' : '') +
+    '<div class="r-line"></div>' +
+    '<div class="r-small r-center">Salamat po!</div>' +
+  '</div>';
+}
+function openReceipt(saleId){
+  var s = sales.filter(function(x){ return x.id === saleId; })[0];
+  if(!s) return;
+  modal(receiptHtml(s) +
+    '<div class="m-actions no-print"><button class="btn btn-ghost" onclick="closeModal()">Isara</button>' +
+    '<button class="btn btn-primary" onclick="window.print()">I-print</button></div>');
+}
+
+/* ================= sales ================= */
+function viewSales(){
+  var list = sales.slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+  var valid = list.filter(function(s){ return !s.voided; });
+  var tKey = todayKey();
+  var todayTotal = round2(valid.filter(function(s){ return dayKey(s.date) === tKey; }).reduce(function(a,s){ return a + s.total; }, 0));
+  var allTotal = round2(valid.reduce(function(a,s){ return a + s.total; }, 0));
+
+  var byDay = {};
+  list.forEach(function(s){ var k = dayKey(s.date); (byDay[k] = byDay[k] || []).push(s); });
+  var days = Object.keys(byDay).sort().reverse();
+
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">Sales</h1><p class="sub">Lahat ng benta at resibo</p></div>' +
+  '<a class="btn btn-primary" href="#/cashier">Bagong Benta</a></div>' +
+  '<div class="grid">' +
+    '<div class="kpi"><p class="kpi-label">Benta Ngayon</p><p class="kpi-val sm">' + peso(todayTotal) + '</p></div>' +
+    '<div class="kpi"><p class="kpi-label">All-time</p><p class="kpi-val sm">' + peso(allTotal) + '</p></div>' +
+    '<div class="kpi"><p class="kpi-label">Transactions</p><p class="kpi-val">' + valid.length + '</p></div>' +
+  '</div>' +
+  (days.length ? days.map(function(k){
+    return '<div class="card" style="margin-top:12px"><div class="cart-head"><h2 class="h2">' + fmtDate(k + 'T12:00:00') + '</h2>' +
+      '<span class="pill">' + peso(byDay[k].filter(function(s){ return !s.voided; }).reduce(function(a,s){ return a + s.total; }, 0)) + '</span></div>' +
+      byDay[k].map(function(s){
+        return '<div class="row">' +
+          '<div class="row-main" style="cursor:pointer" onclick="openReceipt(\'' + s.id + '\')">' +
+            '<p class="row-title">' + esc(s.no) + ' \u00b7 ' + s.items.length + ' item(s) <span class="badge ' + (s.voided ? 'b-void' : (s.payment === 'utang' ? 'b-utang' : 'b-cash')) + '">' + (s.voided ? 'Voided' : (s.payment === 'utang' ? 'Utang' : 'Cash')) + '</span></p>' +
+            '<p class="row-sub">' + fmtTime(s.date) + (s.payment === 'utang' ? ' \u00b7 ' + esc(s.account_name || '') : '') + '</p>' +
+          '</div>' +
+          '<div class="row-val">' + peso(s.total) + '</div>' +
+          (!s.voided ? '<button class="btn btn-sm btn-danger" onclick="voidSale(\'' + s.id + '\')">Void</button>' : '') +
+        '</div>';
+      }).join('') + '</div>';
+  }).join('') : '<div class="card" style="margin-top:12px"><p class="empty">Wala pang benta. Pumunta sa Cashier para magsimula.</p></div>');
+}
+function voidSale(id){
+  askCode('I-void ang sale na ito? Ibabalik ang stock.', function(){
+    var s = sales.filter(function(x){ return x.id === id; })[0];
+    if(!s || s.voided) return;
+    s.voided = true;
+    s.items.forEach(function(i){
+      var p = products.filter(function(x){ return x.id === i.product_id; })[0];
+      if(p && (p.stock || 0) > 0) p.stock = p.stock + i.qty;
+    });
+    if(s.utang_id){
+      var t = utangTxns.filter(function(x){ return x.id === s.utang_id; })[0];
+      if(t && !t.voided){
+        t.voided = true;
+        var a = accounts.filter(function(x){ return x.id === t.account_id; })[0];
+        if(a) a.balance = round2((a.balance || 0) - t.amount);
+      }
+    }
+    persist();
+    render();
+    toast('Na-void na ang sale.');
+  });
+}
+
+/* ================= products ================= */
+function viewProducts(){
+  var list = filterProducts(ui.productsQ);
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">Products</h1><p class="sub">' + products.length + ' produkto sa catalog</p></div>' +
+  '<button class="btn btn-primary" onclick="openProductForm()">+ Add Product</button></div>' +
+  '<div class="card">' +
+    '<input class="input" placeholder="Hanapin ang produkto\u2026" value="' + esc(ui.productsQ) + '" oninput="ui.productsQ=this.value;document.getElementById(\'prodList\').innerHTML=prodListHtml(this.value)">' +
+    '<div id="prodList">' + prodListHtml(ui.productsQ) + '</div>' +
+  '</div>';
+}
+function prodListHtml(q){
+  var list = filterProducts(q);
+  if(!list.length) return '<p class="empty">Walang produkto.</p>';
+  return list.map(function(p){
+    return '<div class="row">' +
+      '<div class="row-main"><p class="row-title">' + esc(p.name) + '</p>' +
+      '<p class="row-sub">' + esc(p.category || 'Uncategorized') + ' \u00b7 Stock ' + (p.stock || 0) + (p.barcode ? ' \u00b7 ' + esc(p.barcode) : '') + '</p></div>' +
+      '<div class="row-val">' + peso(p.price) + '</div>' +
+      '<button class="btn btn-sm btn-ghost" onclick="openProductForm(\'' + p.id + '\')">Edit</button>' +
+      '<button class="btn btn-sm btn-danger" onclick="deleteProduct(\'' + p.id + '\')">Del</button>' +
+    '</div>';
+  }).join('');
+}
+function openProductForm(id){
+  var p = id ? products.filter(function(x){ return x.id === id; })[0] : null;
+  var v = p || { name:'', price:'', cost:'', stock:'', barcode:'', category:'' };
+  modal('<h3 class="m-title">' + (p ? 'I-edit ang Produkto' : 'Bagong Produkto') + '</h3>' +
+    '<form onsubmit="saveProduct(event, \'' + (id || '') + '\')">' +
+      '<label class="lbl">Pangalan</label><input id="pfName" class="input" value="' + esc(v.name) + '" required>' +
+      '<label class="lbl">Presyo</label><input id="pfPrice" class="input" inputmode="decimal" value="' + esc(v.price) + '" required>' +
+      '<label class="lbl">Puhunan (cost)</label><input id="pfCost" class="input" inputmode="decimal" value="' + esc(v.cost || '') + '">' +
+      '<label class="lbl">Stock</label><input id="pfStock" class="input" inputmode="numeric" value="' + esc(v.stock || '') + '">' +
+      '<label class="lbl">Barcode</label><input id="pfBarcode" class="input" value="' + esc(v.barcode || '') + '">' +
+      '<label class="lbl">Kategorya</label><input id="pfCategory" class="input" value="' + esc(v.category || '') + '">' +
+      '<p class="err" id="pfErr"></p>' +
+      '<div class="m-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+      '<button type="submit" class="btn btn-primary">I-save</button></div>' +
+    '</form>');
+}
+function saveProduct(e, id){
+  e.preventDefault();
+  var name = (document.getElementById('pfName').value || '').trim();
+  var price = Number(document.getElementById('pfPrice').value);
+  if(!name || !(price > 0)){ document.getElementById('pfErr').textContent = 'Kailangan ang pangalan at tamang presyo.'; return; }
+  var data = {
+    name: name,
+    price: round2(price),
+    cost: round2(document.getElementById('pfCost').value),
+    stock: Number(document.getElementById('pfStock').value) || 0,
+    barcode: (document.getElementById('pfBarcode').value || '').trim(),
+    category: (document.getElementById('pfCategory').value || '').trim()
+  };
+  if(id){
+    var p = products.filter(function(x){ return x.id === id; })[0];
+    if(p) Object.assign(p, data);
+  } else {
+    data.id = uid();
+    products.push(data);
+  }
+  persist(); closeModal(); render(); toast('Na-save ang produkto.');
+}
+function deleteProduct(id){
+  var p = products.filter(function(x){ return x.id === id; })[0];
+  if(!p) return;
+  askCode('Burahin ang "' + p.name + '"?', function(){
+    products = products.filter(function(x){ return x.id !== id; });
+    persist(); render(); toast('Na-delete ang produkto.');
+  });
+}
+
+/* ================= utang ================= */
+function viewUtang(){
+  var total = round2(accounts.reduce(function(s,a){ return s + (a.balance || 0); }, 0));
+  var open = accounts.filter(function(a){ return (a.balance || 0) > 0; });
+  var sorted = accounts.slice().sort(function(a,b){ return (b.balance || 0) - (a.balance || 0); });
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">Utang</h1><p class="sub">Receivables ng tindahan</p></div>' +
+  '<button class="btn btn-primary" onclick="openAccountForm()">+ Bagong Account</button></div>' +
+  '<div class="hero"><p class="hero-label">Kabuuang Utang</p><p class="hero-big">' + peso(total) + '</p>' +
+    '<div class="hero-row"><div class="mini"><div class="mini-ic">\uD83D\uDC65</div><div><p class="mini-label">May Balanse</p><p class="mini-val">' + open.length + ' account(s)</p></div></div>' +
+    '<div class="mini"><div class="mini-ic">\uD83D\uDCD2</div><div><p class="mini-label">Accounts</p><p class="mini-val">' + accounts.length + ' total</p></div></div></div></div>' +
+  '<div class="card" style="margin-top:12px"><h2 class="h2">Accounts</h2>' +
+    (sorted.length ? sorted.map(function(a){
+      return '<a class="row" href="#/utang/' + a.id + '">' +
+        '<div class="row-main"><p class="row-title">' + esc(a.name) + '</p>' +
+        '<p class="row-sub">' + (a.phone ? esc(a.phone) : 'Walang number') + '</p></div>' +
+        '<div class="row-val" style="color:' + ((a.balance || 0) > 0 ? 'var(--pink2)' : 'var(--muted)') + '">' + peso(a.balance) + '</div>' +
+      '</a>';
+    }).join('') : '<p class="empty">Wala pang utang account.</p>') + '</div>';
+}
+function openAccountForm(){
+  modal('<h3 class="m-title">Bagong Utang Account</h3>' +
+    '<form onsubmit="saveAccount(event)">' +
+      '<label class="lbl">Pangalan</label><input id="afName" class="input" required>' +
+      '<label class="lbl">Numero (optional)</label><input id="afPhone" class="input" inputmode="tel">' +
+      '<p class="err" id="afErr"></p>' +
+      '<div class="m-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+      '<button type="submit" class="btn btn-primary">I-save</button></div>' +
+    '</form>');
+}
+function saveAccount(e){
+  e.preventDefault();
+  var name = (document.getElementById('afName').value || '').trim();
+  if(!name){ document.getElementById('afErr').textContent = 'Kailangan ang pangalan.'; return; }
+  accounts.push({ id:uid(), name:name, phone:(document.getElementById('afPhone').value || '').trim(), balance:0, date:new Date().toISOString() });
+  persist(); closeModal(); render(); toast('Nadagdag ang account.');
+}
+function viewAccount(id){
+  var a = accounts.filter(function(x){ return x.id === id; })[0];
+  if(!a){
+    return '<div class="card"><p class="empty">Hindi mahanap ang account.</p>' +
+      '<a class="btn btn-ghost btn-block" href="#/utang">Bumalik sa Utang</a></div>';
+  }
+  var list = utangTxns.filter(function(t){ return t.account_id === id && !t.voided; })
+    .sort(function(x,y){ return y.date.localeCompare(x.date); });
+  var totalUtang = round2(list.filter(function(t){ return t.type === 'purchase'; }).reduce(function(s,t){ return s + (t.amount || 0); }, 0));
+  var totalBayad = round2(list.filter(function(t){ return t.type === 'repayment'; }).reduce(function(s,t){ return s + (t.amount || 0); }, 0));
+
+  return '' +
+  '<div class="page-head"><div><a class="sub" href="#/utang" style="text-decoration:none">\u2190 Lahat ng accounts</a>' +
+    '<h1 class="h1" style="margin-top:4px">' + esc(a.name) + '</h1>' +
+    (a.phone ? '<p class="sub">' + esc(a.phone) + '</p>' : '') + '</div></div>' +
+  '<div class="hero"><p class="hero-label">Balanse ng Utang</p><p class="hero-big">' + peso(a.balance) + '</p>' +
+    '<div class="hero-row">' +
+      '<div class="mini"><div class="mini-ic">\u2191</div><div><p class="mini-label">Total Utang</p><p class="mini-val">' + peso(totalUtang) + '</p></div></div>' +
+      '<div class="mini"><div class="mini-ic">\u2193</div><div><p class="mini-label">Total Bayad</p><p class="mini-val">' + peso(totalBayad) + '</p></div></div>' +
+    '</div></div>' +
+  '<div class="grid" style="margin-top:12px">' +
+    '<button class="btn btn-primary" onclick="openUtangAdd(\'' + a.id + '\')">+ Mag-Utang</button>' +
+    '<button class="btn btn-ghost" onclick="openBayad(\'' + a.id + '\')">Bayad</button>' +
+  '</div>' +
+  '<div class="card" style="margin-top:12px"><h2 class="h2">History</h2>' +
+    (list.length ? list.map(utangRow).join('') : '<p class="empty">Wala pang transaction.</p>') + '</div>';
+}
+function utangRow(t){
+  var isPay = t.type === 'repayment';
+  return '<div class="row">' +
+    '<div class="row-main"><p class="row-title">' + (isPay ? 'Bayad' : (t.type === 'adjustment' ? 'Adjustment' : 'Utang')) +
+      ' <span class="badge ' + (isPay ? 'b-cash' : 'b-utang') + '">' + (isPay ? 'Bayad' : 'Utang') + '</span></p>' +
+      '<p class="row-sub">' + fmtDate(t.date) + ' \u00b7 ' + fmtTime(t.date) + (t.note ? ' \u00b7 ' + esc(t.note) : '') + '</p></div>' +
+    '<div class="row-val" style="color:' + (isPay ? 'var(--green)' : 'var(--pink2)') + '">' + (isPay ? '\u2212' : '+') + peso(t.amount) +
+      '<div class="row-sub">bal. ' + peso(t.balance_after) + '</div></div>' +
+  '</div>';
+}
+function openUtangAdd(acctId){
+  modal('<h3 class="m-title">Mag-Utang</h3>' +
+    '<form onsubmit="saveUtangAdd(event, \'' + acctId + '\')">' +
+      '<label class="lbl">Halaga</label><input id="uaAmt" class="input" inputmode="decimal" placeholder="0.00" required>' +
+      '<label class="lbl">Note (optional)</label><input id="uaNote" class="input">' +
+      '<p class="err" id="uaErr"></p>' +
+      '<div class="m-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+      '<button type="submit" class="btn btn-primary">I-record</button></div>' +
+    '</form>');
+}
+function saveUtangAdd(e, acctId){
+  e.preventDefault();
+  var amt = round2(document.getElementById('uaAmt').value);
+  if(!(amt > 0)){ document.getElementById('uaErr').textContent = 'Ilagay ang tamang halaga.'; return; }
+  var a = accounts.filter(function(x){ return x.id === acctId; })[0];
+  if(!a) return;
+  a.balance = round2((a.balance || 0) + amt);
+  utangTxns.push({
+    id: uid(), account_id: a.id, account_name: a.name, type:'purchase',
+    amount: amt, balance_after: a.balance, items: [],
+    note: (document.getElementById('uaNote').value || '').trim(),
+    voided: false, date: new Date().toISOString()
+  });
+  persist(); closeModal(); render(); toast('Naidagdag sa utang.');
+}
+function openBayad(acctId){
+  var a = accounts.filter(function(x){ return x.id === acctId; })[0];
+  modal('<h3 class="m-title">Bayad</h3>' +
+    '<p class="m-text">Balanse: <strong>' + peso(a ? a.balance : 0) + '</strong></p>' +
+    '<form onsubmit="saveBayad(event, \'' + acctId + '\')">' +
+      '<label class="lbl">Halaga ng bayad</label><input id="bpAmt" class="input" inputmode="decimal" placeholder="0.00" required>' +
+      '<label class="lbl">Note (optional)</label><input id="bpNote" class="input">' +
+      '<p class="err" id="bpErr"></p>' +
+      '<div class="m-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>' +
+      '<button type="submit" class="btn btn-primary">I-record</button></div>' +
+    '</form>');
+}
+function saveBayad(e, acctId){
+  e.preventDefault();
+  var amt = round2(document.getElementById('bpAmt').value);
+  var a = accounts.filter(function(x){ return x.id === acctId; })[0];
+  if(!a) return;
+  if(!(amt > 0)){ document.getElementById('bpErr').textContent = 'Ilagay ang tamang halaga.'; return; }
+  if(amt > (a.balance || 0)){ document.getElementById('bpErr').textContent = 'Sobra sa balanse (' + peso(a.balance) + ').'; return; }
+  a.balance = round2((a.balance || 0) - amt);
+  utangTxns.push({
+    id: uid(), account_id: a.id, account_name: a.name, type:'repayment',
+    amount: amt, balance_after: a.balance, items: [],
+    note: (document.getElementById('bpNote').value || '').trim(),
+    voided: false, date: new Date().toISOString()
+  });
+  persist(); closeModal(); render(); toast('Narecord ang bayad.');
+}
+
+/* ================= gcash ================= */
+function gcashBalances(){
+  var onCash = 0, onGcash = 0, profit = 0;
+  gcash.filter(function(r){ return !r.voided; }).forEach(function(r){
+    if(r.type === 'cash_in'){
+      onGcash -= r.amount; onCash += (r.amount + (r.fee || 0)); profit += (r.fee || 0);
+    } else if(r.type === 'cash_out'){
+      onGcash += r.amount; onCash -= (r.amount - (r.fee || 0)); profit += (r.fee || 0);
+    } else if(r.type === 'fund_add'){
+      if(r.fund === 'on_cash') onCash += r.amount; else onGcash += r.amount;
+    }
+  });
+  return { onCash: round2(onCash), onGcash: round2(onGcash), profit: round2(profit) };
+}
+function viewGcash(){
+  var b = gcashBalances();
+  var list = gcash.slice().sort(function(x,y){ return y.date.localeCompare(x.date); }).slice(0, 40);
+  var labels = { cash_in:'Cash In', cash_out:'Cash Out', fund_add:'Fund Add' };
+  var badges = { cash_in:'b-in', cash_out:'b-out', fund_add:'b-fund' };
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">GCash</h1><p class="sub">Cash in / cash out at pondo</p></div></div>' +
+  '<div class="grid">' +
+    '<div class="kpi"><p class="kpi-label">On Cash</p><p class="kpi-val sm">' + peso(b.onCash) + '</p></div>' +
+    '<div class="kpi"><p class="kpi-label">On GCash</p><p class="kpi-val sm">' + peso(b.onGcash) + '</p></div>' +
+    '<div class="kpi"><p class="kpi-label">Tubig / Profit</p><p class="kpi-val sm">' + peso(b.profit) + '</p></div>' +
+  '</div>' +
+  '<div class="card" style="margin-top:12px"><h2 class="h2">Bagong Record</h2>' +
+    '<form onsubmit="addGcash(event)">' +
+      '<label class="lbl">Uri</label>' +
+      '<select id="gcType" class="input" onchange="document.getElementById(\'gcFeeWrap\').style.display=(this.value===\'fund_add\'?\'none\':\'block\')">' +
+        '<option value="cash_in">Cash In</option><option value="cash_out">Cash Out</option><option value="fund_add">Fund Add</option>' +
+      '</select>' +
+      '<label class="lbl">Halaga</label><input id="gcAmt" class="input" inputmode="decimal" placeholder="0.00" required>' +
+      '<div id="gcFeeWrap"><label class="lbl">Fee</label><input id="gcFee" class="input" inputmode="decimal" placeholder="0.00"></div>' +
+      '<div id="gcFundWrap" style="display:none"><label class="lbl">Pondo</label>' +
+        '<select id="gcFund" class="input"><option value="on_cash">On Cash</option><option value="on_gcash">On GCash</option></select></div>' +
+      '<label class="lbl">Note</label><input id="gcNote" class="input">' +
+      '<p class="err" id="gcErr"></p>' +
+      '<button class="btn btn-primary btn-block" style="margin-top:12px" type="submit">I-save</button>' +
+    '</form></div>' +
+  '<div class="card" style="margin-top:12px"><h2 class="h2">Records</h2>' +
+    (list.length ? list.map(function(r){
+      return '<div class="row">' +
+        '<div class="row-main"><p class="row-title">' + labels[r.type] + ' <span class="badge ' + badges[r.type] + '">' + esc(r.fund === 'on_cash' ? 'On Cash' : 'On GCash') + '</span>' +
+          (r.voided ? ' <span class="badge b-void">Voided</span>' : '') + '</p>' +
+          '<p class="row-sub">' + fmtDate(r.date) + ' \u00b7 ' + fmtTime(r.date) + (r.note ? ' \u00b7 ' + esc(r.note) : '') + '</p></div>' +
+        '<div class="row-val">' + peso(r.amount) + '<div class="row-sub">fee ' + peso(r.fee || 0) + '</div></div>' +
+        (!r.voided ? '<button class="btn btn-sm btn-danger" onclick="voidGcash(\'' + r.id + '\')">Void</button>' : '') +
+      '</div>';
+    }).join('') : '<p class="empty">Wala pang GCash record.</p>') + '</div>';
+}
+function addGcash(e){
+  e.preventDefault();
+  var type = document.getElementById('gcType').value;
+  var amt = round2(document.getElementById('gcAmt').value);
+  if(!(amt > 0)){ document.getElementById('gcErr').textContent = 'Ilagay ang tamang halaga.'; return; }
+  var fee = type === 'fund_add' ? 0 : round2(document.getElementById('gcFee').value);
+  var fund = type === 'fund_add' ? document.getElementById('gcFund').value : 'on_gcash';
+  gcash.push({
+    id: uid(), type: type, fund: fund, amount: amt, fee: fee,
+    note: (document.getElementById('gcNote').value || '').trim(),
+    voided: false, date: new Date().toISOString()
+  });
+  persist(); render(); toast('Na-save ang GCash record.');
+}
+function voidGcash(id){
+  askCode('I-void ang record na ito?', function(){
+    var r = gcash.filter(function(x){ return x.id === id; })[0];
+    if(!r) return;
+    r.voided = true;
+    persist(); render(); toast('Na-void na.');
+  });
+}
+
+/* ================= cloud sync (Supabase via fetch) ================= */
+function cloudBase(){ return String(cloud.url || '').replace(/\/+$/, ''); }
+function cloudReady(){ return !!(cloudBase() && cloud.key && cloud.storeId); }
+function localData(){
+  return { products:products, sales:sales, accounts:accounts, utang:utangTxns, gcash:gcash, settings:settings, users:loadUsers() };
+}
+function setCloudMsg(msg){
+  cloudMsg = msg;
+  var el = document.getElementById('cloudMsg');
+  if(el) el.textContent = msg;
+}
+function viewCloud(){
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">Cloud Sync</h1><p class="sub">I-share ang data sa lahat ng device</p></div>' +
+  '<span class="pill">' + (navigator.onLine ? 'Online' : 'Offline') + '</span></div>' +
+  '<div class="card"><h2 class="h2">Connection Settings</h2>' +
+    '<form onsubmit="saveCloud(event)">' +
+      '<label class="lbl">Supabase URL</label>' +
+      '<input id="cUrl" class="input" value="' + esc(cloud.url) + '" placeholder="https://xxxx.supabase.co">' +
+      '<label class="lbl">Supabase Publishable Key</label>' +
+      '<input id="cKey" class="input" value="' + esc(cloud.key) + '" placeholder="sb_publishable_...">' +
+      '<label class="lbl">Store ID</label>' +
+      '<input id="cStore" class="input" value="' + esc(cloud.storeId) + '" placeholder="main-store">' +
+      '<button class="btn btn-primary btn-block" style="margin-top:12px" type="submit">Save Connection Settings</button>' +
+    '</form>' +
+    '<p class="row-sub" id="cloudMsg" style="margin-top:10px">' + esc(cloudMsg || 'Walang sync pa.') + '</p>' +
+  '</div>' +
+  '<div class="card"><h2 class="h2">Manual Sync</h2>' +
+    '<p class="m-text">Naka-save agad sa device ang bawat pagbabago. Awtomatiko ring uma-upload sa cloud kapag may internet at may naka-save na key.</p>' +
+    '<button class="btn btn-primary btn-block" style="margin-top:12px" onclick="cloudUpload(false)">Upload / Sync Local Data to Cloud</button>' +
+    '<button class="btn btn-ghost btn-block" style="margin-top:8px" onclick="cloudDownload()">Download Prebuilt Data</button>' +
+  '</div>' +
+  '<div class="card"><h2 class="h2">Data sa Device</h2>' +
+    '<p class="row-sub">' + products.length + ' products \u00b7 ' + sales.length + ' sales \u00b7 ' + accounts.length + ' accounts \u00b7 ' + utangTxns.length + ' utang records</p>' +
+    '<p class="row-sub" style="margin-top:6px">Table na kailangan sa Supabase: store_sync (id text primary key, data jsonb, updated_at timestamptz).</p>' +
+  '</div>' +
+  '<p class="foot">' + esc(settings.storeName) + ' \u00b7 Cloud Sync</p>';
+}
+function saveCloud(e){
+  e.preventDefault();
+  cloud.url     = (document.getElementById('cUrl').value || '').trim() || CLOUD_DEFAULT.url;
+  cloud.key     = (document.getElementById('cKey').value || '').trim();
+  cloud.storeId = (document.getElementById('cStore').value || '').trim() || CLOUD_DEFAULT.storeId;
+  writeStore('cloud', cloud);
+  cloudMsg = 'Naka-save ang connection settings.';
+  render();
+  setCloudMsg(cloudMsg);
+  toast('Naka-save ang connection settings.');
+  queueCloudSync();
+}
+function queueCloudSync(){
+  if(!cloudReady() || !navigator.onLine) return;
+  clearTimeout(cloudTimer);
+  cloudTimer = setTimeout(function(){ cloudUpload(true); }, 1200);
+}
+function cloudUpload(background){
+  if(!cloudReady()){ setCloudMsg('Kumpletuhin muna ang connection settings.'); return; }
+  if(!navigator.onLine){ setCloudMsg('Walang internet \u2014 naka-save pa rin ang data sa device.'); return; }
+  if(!background) setCloudMsg('Nag-upload ng data sa cloud\u2026');
+  fetch(cloudBase() + '/rest/v1/store_sync', {
+    method: 'POST',
+    headers: {
+      'apikey': cloud.key,
+      'Authorization': 'Bearer ' + cloud.key,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({ id: cloud.storeId, data: localData(), updated_at: new Date().toISOString() })
+  }).then(function(res){
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    setCloudMsg('Na-upload ang local data sa cloud \u00b7 ' + fmtTime(new Date().toISOString()));
+  }).catch(function(err){
+    setCloudMsg('Hindi na-upload: ' + ((err && err.message) || 'error'));
+  });
+}
+/* Pagsamahin ang records nang walang doble sa parehong id. */
+function mergedList(list, incoming){
+  var seen = {}, out = [], added = 0;
+  (list || []).forEach(function(x){ if(x && x.id){ seen[x.id] = true; } out.push(x); });
+  (incoming || []).forEach(function(x){
+    if(!x || !x.id || seen[x.id]) return;
+    seen[x.id] = true;
+    out.push(x);
+    added++;
+  });
+  return { list: out, added: added };
+}
+function cloudDownload(){
+  if(!cloudReady()){ setCloudMsg('Kumpletuhin muna ang connection settings.'); return; }
+  if(!navigator.onLine){ setCloudMsg('Walang internet \u2014 hindi maka-download.'); return; }
+  setCloudMsg('Nag-download ng data\u2026');
+  var url = cloudBase() + '/rest/v1/store_sync?id=eq.' + encodeURIComponent(cloud.storeId) + '&select=*';
+  fetch(url, { headers: { 'apikey': cloud.key, 'Authorization': 'Bearer ' + cloud.key } })
+    .then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(rows){
+      var added = 0, m, cloudUsers = loadUsers();
+      (rows || []).forEach(function(row){
+        var d = row && row.data;
+        if(!d) return;
+        m = mergedList(cloudUsers, d.users);    cloudUsers = m.list; added += m.added;
+        m = mergedList(products, d.products);   products  = m.list; added += m.added;
+        m = mergedList(sales, d.sales);         sales     = m.list; added += m.added;
+        m = mergedList(accounts, d.accounts);   accounts  = m.list; added += m.added;
+        m = mergedList(utangTxns, d.utang);     utangTxns = m.list; added += m.added;
+        m = mergedList(gcash, d.gcash);         gcash     = m.list; added += m.added;
+        if(d.settings){
+          settings.storeName   = settings.storeName   || d.settings.storeName;
+          settings.managerCode = settings.managerCode || d.settings.managerCode;
+          settings.counter = Math.max(Number(settings.counter) || 1, Number(d.settings.counter) || 1);
+        }
+      });
+      saveUsers(cloudUsers);
+      persist(true);
+      render();
+      setCloudMsg(added + ' record(s) ang na-download mula sa cloud.');
+      toast(added + ' record(s) na-download.');
+    })
+    .catch(function(err){
+      setCloudMsg('Hindi na-download: ' + ((err && err.message) || 'error'));
+    });
+}
+
+/* ================= settings ================= */
+function viewSettings(){
+  return '' +
+  '<div class="page-head"><div><h1 class="h1">Settings</h1><p class="sub">Tindahan, backup at data</p></div></div>' +
+  '<div class="card"><h2 class="h2">Tindahan</h2>' +
+    '<form onsubmit="saveSettings(event)">' +
+      '<label class="lbl">Pangalan ng tindahan</label>' +
+      '<input id="stName" class="input" value="' + esc(settings.storeName) + '">' +
+      '<label class="lbl">Manager code</label>' +
+      '<input id="stCode" class="input" inputmode="numeric" value="' + esc(settings.managerCode) + '">' +
+      '<button class="btn btn-primary btn-block" style="margin-top:12px" type="submit">I-save</button>' +
+    '</form></div>' +
+  '<div class="card" style="margin-top:12px"><h2 class="h2">Backup</h2>' +
+    '<p class="m-text">I-export ang lahat ng data sa isang file, o i-import pabalik.</p>' +
+    '<div class="m-actions" style="margin-top:12px">' +
+      '<button class="btn btn-ghost" onclick="exportBackup()">Export</button>' +
+      '<button class="btn btn-ghost" onclick="document.getElementById(\'importFile\').click()">Import</button>' +
+    '</div>' +
+    '<input id="importFile" type="file" accept="application/json,.json" style="display:none" onchange="importBackup(this)">' +
+    '<div class="hr"></div>' +
+    '<p class="row-sub">' + products.length + ' products \u00b7 ' + sales.length + ' sales \u00b7 ' + accounts.length + ' accounts \u00b7 ' + utangTxns.length + ' utang records</p>' +
+  '</div>' +
+  '<div class="card" style="margin-top:12px"><h2 class="h2">Danger Zone</h2>' +
+    '<p class="m-text">Buburahin ang lahat ng records sa device na ito.</p>' +
+    '<button class="btn btn-danger btn-block" style="margin-top:12px" onclick="resetData()">Burahin ang lahat ng data</button>' +
+  '</div>' +
+  '<p class="foot">' + esc(settings.storeName) + ' \u00b7 Offline POS \u00b7 gumagana kahit walang internet</p>';
+}
+function saveSettings(e){
+  e.preventDefault();
+  settings.storeName = (document.getElementById('stName').value || '').trim() || 'Queeny Store';
+  settings.managerCode = (document.getElementById('stCode').value || '').trim() || '3105';
+  persist(); render(); toast('Na-save ang settings.');
+}
+function exportBackup(){
+  var data = {
+    products: products, sales: sales, accounts: accounts, utang: utangTxns,
+    gcash: gcash, settings: settings, exported: new Date().toISOString()
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'queeny-store-backup-' + todayKey() + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('Na-export ang backup.');
+}
+function importBackup(input){
+  var file = input.files && input.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var d = JSON.parse(reader.result);
+      if(!d || typeof d !== 'object') throw new Error('bad');
+      products  = d.products  || [];
+      sales     = d.sales     || [];
+      accounts  = d.accounts  || [];
+      utangTxns = d.utang     || [];
+      gcash     = d.gcash     || [];
+      settings  = Object.assign(settings, d.settings || {});
+      persist();
+      render();
+      toast('Na-import ang backup.');
+    }catch(e){
+      alert('Hindi mabasa ang backup file.');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+function resetData(){
+  askCode('Buburahin LAHAT ng data sa device na ito. Sigurado ka?', function(){
+    products = []; sales = []; accounts = []; utangTxns = []; gcash = [];
+    settings = { storeName: settings.storeName, managerCode: settings.managerCode, counter: 1 };
+    persist();
+    cart = [];
+    render();
+    toast('Nabura ang lahat ng data.');
+  });
+}
+
+/* ================= start ================= */
+loadAll();
+window.addEventListener('hashchange', render);
+window.addEventListener('online', function(){ queueCloudSync(); });
+window.addEventListener('offline', function(){ setCloudMsg('Walang internet \u2014 naka-save pa rin ang data sa device.'); });
+render();
+
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+</script>
+</body>
+</html>
