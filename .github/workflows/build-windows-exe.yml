@@ -17,7 +17,7 @@ jobs:
 
       - name: Package HTML into Windows EXE
         run: |
-          mkdir app_src
+          New-Item -ItemType Directory -Force -Path app_src
           Copy-Item *.html app_src\ -ErrorAction SilentlyContinue
           Copy-Item *.css app_src\ -ErrorAction SilentlyContinue
           Copy-Item *.js app_src\ -ErrorAction SilentlyContinue
@@ -41,11 +41,12 @@ jobs:
           }
           "@
 
-          npx --yes @electron/packager app_src "KatberqueenStore" --platform=win32 --arch=x64 --out=dist --overwrite
-          Compress-Archive -Path "dist\KatberqueenStore-win32-x64\*" -DestinationPath "KatberqueenStore-Windows.zip"
+          cd app_src
+          npm install --save-dev electron @electron/packager
+          npx electron-packager . "KatberqueenStore" --platform=win32 --arch=x64 --out=..\dist --overwrite
 
       - name: Upload Windows App
         uses: actions/upload-artifact@v4
         with:
           name: katberqueen-store-windows
-          path: KatberqueenStore-Windows.zip
+          path: dist/KatberqueenStore-win32-x64/
