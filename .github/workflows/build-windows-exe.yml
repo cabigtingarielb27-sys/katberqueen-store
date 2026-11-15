@@ -1,0 +1,51 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Package HTML into Windows EXE
+        run: |
+          mkdir app_src
+          Copy-Item *.html app_src\ -ErrorAction SilentlyContinue
+          Copy-Item *.css app_src\ -ErrorAction SilentlyContinue
+          Copy-Item *.js app_src\ -ErrorAction SilentlyContinue
+          Copy-Item *.png, *.jpg, *.jpeg, *.svg, *.gif, *.json app_src\ -ErrorAction SilentlyContinue
+          
+          Set-Content -Path "app_src\main.js" -Value @"
+          const { app, BrowserWindow } = require('electron');
+          function createWindow() {
+            const win = new BrowserWindow({ width: 1200, height: 800, autoHideMenuBar: true });
+            win.loadFile('index.html');
+          }
+          app.whenReady().then(createWindow);
+          app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+          "@
+
+          Set-Content -Path "app_src\package.json" -Value @"
+          {
+            "name": "katberqueen-store",
+            "version": "1.0.0",
+            "main": "main.js"
+          }
+          "@
+
+          npx --yes @electron/packager app_src "KatberqueenStore" --platform=win32 --arch=x64 --out=dist --overwrite
+          Compress-Archive -Path "dist\KatberqueenStore-win32-x64\*" -DestinationPath "KatberqueenStore-Windows.zip"
+
+      - name: Upload Windows App
+        uses: actions/upload-artifact@v4
+        with:
+          name: katberqueen-store-windows
+          path: KatberqueenStore-Windows.zip
